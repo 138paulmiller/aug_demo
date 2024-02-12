@@ -1,0 +1,3 @@
+[submodule "aug"]
+	path = aug
+	url = git@github.com:138paulmiller/aug.git
