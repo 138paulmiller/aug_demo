@@ -27,7 +27,7 @@ aug_value AUG_SDL_CreateWindow(int argc, aug_value* args)
 		const int y = aug_to_int(&args[2]);
 		const int w = aug_to_int(&args[3]);
 		const int h = aug_to_int(&args[4]);
-		return aug_create_custom(SDL_CreateWindow(title->buffer, x, y, w, h, SDL_WINDOW_SHOWN)); 
+		return aug_create_user_data(SDL_CreateWindow(title->buffer, x, y, w, h, SDL_WINDOW_SHOWN)); 
 	}
 
 	return aug_none();
@@ -37,7 +37,7 @@ aug_value AUG_SDL_DestroyWindow(int argc, aug_value* args)
 {
 	if (argc == 1)
 	{
-		SDL_Window* renderer = (SDL_Window*)args[0].data;
+		SDL_Window* renderer = (SDL_Window*)args[0].userdata;
 		SDL_DestroyWindow(renderer);
 	}
 	return aug_none();
@@ -47,8 +47,8 @@ aug_value AUG_SDL_CreateRenderer(int argc, aug_value* args)
 {
 	if (argc == 1)
 	{
-		SDL_Window* window = (SDL_Window*)args[0].data;
-		aug_create_custom(SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC));
+		SDL_Window* window = (SDL_Window*)args[0].userdata;
+		aug_create_user_data(SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC));
 	}
 	return aug_none();
 }
@@ -58,7 +58,7 @@ aug_value AUG_SDL_DestroyRenderer(int argc, aug_value* args)
 {
 	if (argc == 1)
 	{
-		SDL_Renderer* renderer = (SDL_Renderer*)args[0].data;
+		SDL_Renderer* renderer = (SDL_Renderer*)args[0].userdata;
 		SDL_DestroyRenderer(renderer);
 	}
 	return aug_none();
@@ -68,7 +68,7 @@ aug_value AUG_SDL_SetRenderDrawColor(int argc, aug_value* args)
 {
 	if (argc == 5)
 	{
-		SDL_Renderer* renderer = (SDL_Renderer*)args[0].data;
+		SDL_Renderer* renderer = (SDL_Renderer*)args[0].userdata;
 		const int r = aug_to_int(&args[1]);
 		const int g = aug_to_int(&args[2]);
 		const int b = aug_to_int(&args[3]);
@@ -82,7 +82,7 @@ aug_value AUG_SDL_RenderFillRect(int argc, aug_value* args)
 {
 	if (argc == 5)
 	{
-		SDL_Renderer* renderer = (SDL_Renderer*)args[0].data;
+		SDL_Renderer* renderer = (SDL_Renderer*)args[0].userdata;
 
 		SDL_Rect rect;
 		rect.x = aug_to_int(&args[1]);
@@ -98,7 +98,7 @@ aug_value AUG_SDL_RenderClear(int argc, aug_value* args)
 {
 	if (argc == 1)
 	{
-		SDL_Renderer* renderer = (SDL_Renderer*)args[0].data;
+		SDL_Renderer* renderer = (SDL_Renderer*)args[0].userdata;
 		SDL_RenderClear(renderer);
 	}
 	return aug_none();
@@ -109,7 +109,7 @@ aug_value AUG_SDL_RenderPresent(int argc, aug_value* args)
 {
 	if (argc == 1)
 	{
-		SDL_Renderer* renderer = (SDL_Renderer*)args[0].data;
+		SDL_Renderer* renderer = (SDL_Renderer*)args[0].userdata;
 		SDL_RenderPresent(renderer);
 	}
 	return aug_none();
