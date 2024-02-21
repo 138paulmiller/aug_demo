@@ -1,6 +1,6 @@
 var width = 540;
 var height = 540;
-var pixel_size = 10;
+var pixel_size = 15;
 var speed = 100;
 var px = 0;
 var py = 0;
@@ -14,16 +14,20 @@ var game_over;
 var victory;
 
 func Startup(){
-	GfxCreate("Snake", width, height);
+	GfxCreateWindow("Snake", width, height);
 
 	Spawn();
 }
 
 func Shutdown(){
-	GfxDestroy();
+	GfxDestroyWindow();
 }
 
 func KeyUp(key){
+	if(key == "Escape"){
+		Exit();
+	}
+
 	if game_over {
 		Spawn();
 	}
@@ -92,19 +96,16 @@ func Spawn(){
 	speed = 100;
 	Eat();
 
+	# start in random direction
 	var c = random(0, 3);
 	if c == 0 { 
-		dx = 1;
-		dy = 0;
+		dx = 1; dy = 0;
 	} else if c == 1 {
-		dx = -1;
-		dy = 0;
+		dx = -1; dy = 0;
 	} else if c == 2 {
-		dx = 0;
-		dy = 1;
+		dx = 0; dy = 1;
 	} else if c == 3 {
-		dx = 0;
-		dy = -1;
+		dx = 0; dy = -1;
 	}
 }
 
@@ -141,7 +142,6 @@ func Eat(){
 }
 
 func GameOver(){
-	# TODO: Draw text to hit key to restart
 	GfxClear(32,0,0,255);
 	GfxDrawRect(foodx, foody, pixel_size, pixel_size, 0,255,0,255);
 	for pos in snake {
@@ -153,17 +153,18 @@ func GameOver(){
 func Move(delta){
 	px += dx * delta * speed;
 	py += dy * delta * speed;
+	
 	var x = snap(px, pixel_size); 
 	var y = snap(py, pixel_size);
 
 	# if has not moved since last frame
 	var head = snake[length(snake) - 1];
 	if x == head[0] and y == head[1] {
-		return false;
+		return true;
 	} 
 
 	# check border
-	if x <= 0 or x >= width or y <= 0 or y >= height{
+	if x < 0 or x >= width or y < 0 or y >= height{
 		game_over = true;
 		return false;
 	}

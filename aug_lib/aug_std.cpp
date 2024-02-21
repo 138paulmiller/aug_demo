@@ -2,17 +2,17 @@
 #include <math.h>
 namespace
 {
-	void PrintValue(const aug_value& value);
+	void print_value(const aug_value& value);
 
-	void PrintMapPair(const aug_value* key, aug_value* value, void* user_data)
+	void print_map_pair(const aug_value* key, aug_value* value, void* user_data)
 	{
 		printf("\n\t");
-		PrintValue(*key);
+		print_value(*key);
 		printf(" : ");
-		PrintValue(*value);
+		print_value(*value);
 	}
 
-	void PrintValue(const aug_value& value)
+	void print_value(const aug_value& value)
 	{
 		switch (value.type)
 		{
@@ -45,18 +45,18 @@ namespace
 			printf("[");
 			for( size_t i = 0; i < value.array->length; ++i)
 			{
-				//printf(" ");
+				printf(" ");
 				const aug_value* entry = aug_array_at(value.array, i);
-				PrintValue(*entry);
-				//if(entry->type == AUG_ARRAY) printf("\n");		
+				print_value(*entry);
+				if(entry->type == AUG_ARRAY) printf("\n");		
 			}
-			printf("]");
+			printf(" ]");
 			break;
 		}
 		case AUG_MAP:
 		{		
 			printf("{");
-			aug_map_foreach(value.map, PrintMapPair, NULL);
+			aug_map_foreach(value.map, print_map_pair, NULL);
 			printf("\n}");
 
 			break;
@@ -64,10 +64,10 @@ namespace
 		}
 	}
 
-	aug_value Print(int argc, aug_value* args)
+	aug_value print(int argc, aug_value* args)
 	{
 		for( int i = 0; i < argc; ++i)
-			PrintValue(args[i]);
+			print_value(args[i]);
 
 		printf("\n");
 
@@ -75,19 +75,23 @@ namespace
 	}
 
 
-	aug_value Random(int argc, aug_value* args)
+	aug_value random(int argc, aug_value* args)
 	{
 		int x;
 		if(argc == 1)
 			x = rand() % aug_to_int(args+0);
 		else if(argc == 2)
-			x = rand() % (aug_to_int(args+1) + 1 - aug_to_int(args+0)) + aug_to_int(args+0);
+		{
+			const int lower = aug_to_int(args+0);
+			const int upper = aug_to_int(args+1);
+			x = rand() % (upper - lower + 1) + lower;
+		}
 		else
 			x = rand();
 		return aug_create_int(x);
 	}
 
-	aug_value Append(int argc, aug_value* args)
+	aug_value append(int argc, aug_value* args)
 	{
 		if (argc == 0 || args[0].type != AUG_ARRAY)
 			return aug_none();
@@ -98,7 +102,7 @@ namespace
 		return aug_none();
 	}
 
-	aug_value Remove(int argc, aug_value* args)
+	aug_value remove(int argc, aug_value* args)
 	{
 		if (argc != 2 || args[0].type != AUG_ARRAY)
 			return aug_none();
@@ -109,7 +113,7 @@ namespace
 		return aug_none();
 	}
 
-	aug_value Length(int argc, aug_value* args)
+	aug_value length(int argc, aug_value* args)
 	{
 		if(argc != 1)
 			return aug_none();
@@ -127,7 +131,7 @@ namespace
 		return aug_none();
 	}
 
-	aug_value Contains(int argc, aug_value* args)
+	aug_value contains(int argc, aug_value* args)
 	{
 		if (argc != 1 || args[0].type != AUG_ARRAY)
 			return aug_none();
@@ -142,7 +146,7 @@ namespace
 		return aug_create_bool(false);
 	}
 
-	aug_value Snap(int argc, aug_value* args)
+	aug_value snap(int argc, aug_value* args)
 	{
 		int x = aug_to_int(args + 0);
 		int grid = aug_to_int(args + 1);
@@ -152,11 +156,11 @@ namespace
 
 void aug_std_initialize(aug_vm* vm)
 {
-	aug_register(vm, "print", Print);
-	aug_register(vm, "random", Random);
-	aug_register(vm, "append", Append);
-	aug_register(vm, "remove", Remove);
-	aug_register(vm, "length", Length);
-	aug_register(vm, "contains", Contains);
-	aug_register(vm, "snap", Snap);
+	aug_register(vm, "print", print);
+	aug_register(vm, "random", random);
+	aug_register(vm, "append", append);
+	aug_register(vm, "remove", remove);
+	aug_register(vm, "length", length);
+	aug_register(vm, "contains", contains);
+	aug_register(vm, "snap", snap);
 }
