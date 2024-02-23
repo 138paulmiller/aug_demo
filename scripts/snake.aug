@@ -1,3 +1,4 @@
+use std;
 var window;
 var font;
 var pixel_size = 15;
@@ -16,6 +17,7 @@ func Startup(){
 	window = GfxCreateWindow("Snake", w, h + top_border);
 	font = GfxFont("font/OpenSans.ttf", font_size);
 	snake = [];
+	snake_len = 0;
 	waiting_start = true;
 }
 
@@ -50,7 +52,7 @@ func KeyDown(key){
 	}
 
 	# disallow movement backwards
-	if snake_len and snake_len > 1 {
+	if snake_len > 1 {
 		var x = snap(px, pixel_size) + dx * pixel_size; 
 		var y = snap(py, pixel_size) + dy * pixel_size;
 		if [x,y] == snake[snake_len-2] {
@@ -76,7 +78,7 @@ func Update(delta){
 		GfxDrawRect(window, pos[0], pos[1], pixel_size, pixel_size, 255,255,255,255);
 	}
 
-	GfxText(window, font, concat("Score: ", to_string(snake_len)), 0, 0, 0, 255, 0, 255);
+	#GfxText(window, font, concat("Score: ", to_string(snake_len)), 0, 0, 0, 255, 0, 255);
 
 	if game_over {
 		DrawText("Game Over\nHit any Key to Restart\nHit ESC to Exit", w/2, h/2, 180, 25, 15, 255);

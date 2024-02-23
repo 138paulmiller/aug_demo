@@ -1,0 +1,28 @@
+
+
+
+clear; 
+make clean;
+
+echo "Compiling lib..."
+cd aug_lib
+make clean;
+make
+cd ..
+
+echo "Copying..."
+yes | cp -rf aug_lib/lib/. ./build
+
+echo "Compiling demo..."
+make; 
+cd build; 
+
+if [ "$1" == "-d" ]; then
+valgrind  --main-stacksize=1048576 --tool=memcheck \
+	./aug_demo; 
+else 
+	./aug_demo; 
+
+fi;
+
+cd ..

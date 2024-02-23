@@ -1,5 +1,4 @@
-#include "aug_gfx.h"
-#include "aug_std.h"
+#include "gfx.h"
 
 #define AUG_IMPLEMENTATION
 #include <aug.h>
@@ -37,6 +36,20 @@ namespace
 	};
 
 	static GfxContext s_gfx;
+
+	aug_value Startup(int argc, aug_value* args)
+	{
+		return aug_none();	
+	}
+	aug_value Shutdown(int argc, aug_value* args)
+	{
+		return aug_none();	
+	}
+	aug_value Update(int argc, aug_value* args)
+	{
+		return aug_none();	
+	}
+
 
 	aug_value CreateWindow(int argc, aug_value* args)
 	{
@@ -215,7 +228,10 @@ namespace
 
 void aug_gfx_init(aug_vm* vm)
 {
-	aug_std_initialize(vm);
+	aug_register(vm, "GfxStartup", Startup);
+	aug_register(vm, "GfxShutdown", Shutdown);
+	aug_register(vm, "GfxUpate", Update);
+
 	aug_register(vm, "Load", LoadScript);
 	aug_register(vm, "Exit", ExitScript);
 
@@ -265,6 +281,8 @@ void aug_gfx_push_script(const char* script_filepath)
 {
 	const std::string& full_script_path = s_gfx.script_path + script_filepath;
 	aug_script* script = aug_load(s_gfx.vm, full_script_path.c_str());
+	if(script == NULL)
+		return;
 	s_gfx.scripts.push_back(script);
 	aug_call(s_gfx.vm, script, "Startup");
 	printf("Startup");

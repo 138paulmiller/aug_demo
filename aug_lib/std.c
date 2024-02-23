@@ -1,7 +1,8 @@
-#include "aug_std.h"
 #include <math.h>
 
-aug_value random(int argc, aug_value* args)
+#include <aug.h>
+
+AUG_LIBCALL aug_value aug_std_random(int argc, aug_value* args)
 {
 	int x;
 	if(argc == 1)
@@ -17,17 +18,17 @@ aug_value random(int argc, aug_value* args)
 	return aug_create_int(x);
 }
 
-void print_value(const aug_value& value);
+void aug_std_print_value(const aug_value value);
 
-void print_map_pair(const aug_value* key, aug_value* value, void* user_data)
+void aug_std_print_map_pair(const aug_value* key, aug_value* value, void* user_data)
 {
 	printf("\n\t");
-	print_value(*key);
+	aug_std_print_value(*key);
 	printf(" : ");
-	print_value(*value);
+	aug_std_print_value(*value);
 }
 
-void print_value(const aug_value& value)
+AUG_LIBCALL void aug_std_print_value(const aug_value value)
 {
 	switch (value.type)
 	{
@@ -62,7 +63,7 @@ void print_value(const aug_value& value)
 		{
 			printf(" ");
 			const aug_value* entry = aug_array_at(value.array, i);
-			print_value(*entry);
+			aug_std_print_value(*entry);
 			if(entry->type == AUG_ARRAY) printf("\n");		
 		}
 		printf(" ]");
@@ -71,25 +72,26 @@ void print_value(const aug_value& value)
 	case AUG_MAP:
 	{		
 		printf("{");
-		aug_map_foreach(value.map, print_map_pair, NULL);
+		aug_map_foreach(value.map, aug_std_print_map_pair, NULL);
 		printf("\n}");
 
 		break;
 	}
+	default: break;
 	}
 }
 
-aug_value print(int argc, aug_value* args)
+AUG_LIBCALL aug_value aug_std_print(int argc, aug_value* args)
 {
 	for( int i = 0; i < argc; ++i)
-		print_value(args[i]);
+		aug_std_print_value(args[i]);
 
 	printf("\n");
 
 	return aug_none();
 }
 
-aug_value concat(int argc, aug_value* args)
+AUG_LIBCALL aug_value aug_std_concat(int argc, aug_value* args)
 {
 	if (argc == 0)
 		return aug_none();
@@ -106,26 +108,30 @@ aug_value concat(int argc, aug_value* args)
 			case AUG_STRING:
 				aug_string_append(value.str, arg->str);
 				break;
+			default: break;
 		}
 	}
 	return value;
 }
 
-aug_value split(int argc, aug_value* args)
+AUG_LIBCALL aug_value aug_std_split(int argc, aug_value* args)
 {
-	if (argc != 2 && args[0].type != AUG_STRING && args[1].type != AUG_STRING)
+	if (argc != 2)
+		return aug_none();
+
+	if(args[0].type != AUG_STRING || args[1].type != AUG_STRING)
 		return aug_none();
 
 	aug_value value = aug_create_array();
 	aug_string* str = args[0].str;
 	aug_string* delim = args[1].str;
 	aug_value line = aug_create_string("");
-	for (int i = 0; i < str->length; ++i)
+	for (size_t i = 0; i < str->length; ++i)
 	{
 		char c = str->buffer[i];
 		if( c == delim->buffer[0])
 		{
-			int j = 0;
+			size_t j = 0;
 			while(j < str->length &&  j < delim->length)
 			{
 				if(str->buffer[i+j] != delim->buffer[j])
@@ -150,7 +156,7 @@ aug_value split(int argc, aug_value* args)
 	return value;
 }
 
-aug_value append(int argc, aug_value* args)
+AUG_LIBCALL aug_value aug_std_append(int argc, aug_value* args)
 {
 	if (argc == 0)
 		return aug_none();
@@ -175,15 +181,17 @@ aug_value append(int argc, aug_value* args)
 				case AUG_STRING:
 					aug_string_append(value.str, arg->str);
 					break;
+				default: break;
 			}
 			break;
 		}
+		default: break;
 		} 
 	}
 	return aug_none();
 }
 
-aug_value remove(int argc, aug_value* args)
+AUG_LIBCALL aug_value aug_std_remove(int argc, aug_value* args)
 {
 	if (argc != 2 || args[0].type != AUG_ARRAY)
 		return aug_none();
@@ -194,7 +202,7 @@ aug_value remove(int argc, aug_value* args)
 	return aug_none();
 }
 
-aug_value front(int argc, aug_value* args)
+AUG_LIBCALL aug_value aug_std_front(int argc, aug_value* args)
 {
 	if (argc == 0 || args[0].type != AUG_ARRAY)
 		return aug_none();
@@ -206,7 +214,7 @@ aug_value front(int argc, aug_value* args)
 	return aug_none();
 }
 
-aug_value back(int argc, aug_value* args)
+AUG_LIBCALL aug_value aug_std_back(int argc, aug_value* args)
 {
 	if (argc == 0 || args[0].type != AUG_ARRAY)
 		return aug_none(); 
@@ -218,7 +226,7 @@ aug_value back(int argc, aug_value* args)
 	return aug_none();
 }
 
-aug_value length(int argc, aug_value* args)
+AUG_LIBCALL aug_value aug_std_length(int argc, aug_value* args)
 {
 	if(argc != 1)
 		return aug_none();
@@ -236,14 +244,14 @@ aug_value length(int argc, aug_value* args)
 	return aug_none();
 }
 
-aug_value contains(int argc, aug_value* args)
+AUG_LIBCALL aug_value aug_std_contains(int argc, aug_value* args)
 {
 	if (argc != 1 || args[0].type != AUG_ARRAY)
 		return aug_none();
 
 	aug_value value = args[0];
 	aug_value arg = args[1];
-	for (int i = 0; i < value.array->length; ++i){
+	for (size_t i = 0; i < value.array->length; ++i){
 		aug_value* element = aug_array_at(value.array, i);
 		if(aug_compare(&arg, element))
 			return aug_create_bool(true);
@@ -251,39 +259,46 @@ aug_value contains(int argc, aug_value* args)
 	return aug_create_bool(false);
 }
 
-aug_value snap(int argc, aug_value* args)
+AUG_LIBCALL aug_value aug_std_snap(int argc, aug_value* args)
 {
+	if(argc == 0)
+		return aug_none();
 	int x = aug_to_int(args + 0);
 	int grid = aug_to_int(args + 1);
 	return aug_create_int(floor(x / grid) * grid);
 }
 
-aug_value to_string(int argc, aug_value* args)
+AUG_LIBCALL aug_value aug_std_to_string(int argc, aug_value* args)
 {
+	printf("TO_STR ARGC %d \n", argc);
 	if(argc != 1)
 		return aug_none();
 
+	printf("TO_STR\n");
 	aug_value value = args[0];
    	char out[1024];
-    int len = 0;
     switch (value.type)
     {
     case AUG_NONE:
     	return aug_none();
     case AUG_BOOL:
-        len = snprintf(out, sizeof(out), "%s", value.b ? "true" : "false");
+        snprintf(out, sizeof(out), "%s", value.b ? "true" : "false");
         break;
 	case AUG_CHAR:
-        len = snprintf(out, sizeof(out), "%c", value.c);
+        snprintf(out, sizeof(out), "%c", value.c);
         break;
     case AUG_INT:
-        len = snprintf(out, sizeof(out), "%d", value.i);
+
+	printf("TO_STR INT %d \n", value.i);
+        snprintf(out, sizeof(out), "%d", value.i);
+
+	printf("TO_STR OUT %s \n", out);
         break;
     case AUG_FLOAT:
-        len = snprintf(out, sizeof(out), "%f", value.f);
+        snprintf(out, sizeof(out), "%f", value.f);
         break;
     case AUG_STRING:
-        len = snprintf(out, sizeof(out), "%s", value.str->buffer);
+        snprintf(out, sizeof(out), "%s", value.str->buffer);
         break;
     default:
     	return aug_none();
@@ -291,18 +306,18 @@ aug_value to_string(int argc, aug_value* args)
 	return aug_create_string(out);
 }
 
-void aug_std_initialize(aug_vm* vm)
+AUG_LIBCALL void aug_register_lib(aug_vm* vm, void* lib)
 {
-	aug_register(vm, "random", random);
-	aug_register(vm, "print", print);
-	aug_register(vm, "to_string", to_string);
-	aug_register(vm, "concat", concat);
-	aug_register(vm, "split", split);
-	aug_register(vm, "append", append);
-	aug_register(vm, "remove", remove);
-	aug_register(vm, "front", front);
-	aug_register(vm, "back", back);
-	aug_register(vm, "length", length);
-	aug_register(vm, "contains", contains);
-	aug_register(vm, "snap", snap);
+	aug_register_libcall(vm, lib, "snap",      "aug_std_snap"      );
+	aug_register_libcall(vm, lib, "random",    "aug_std_random"    );
+	aug_register_libcall(vm, lib, "print",     "aug_std_print"     );
+	aug_register_libcall(vm, lib, "to_string", "aug_std_to_string" );
+	aug_register_libcall(vm, lib, "concat",    "aug_std_concat"    );
+	aug_register_libcall(vm, lib, "append",    "aug_std_append"    );
+	aug_register_libcall(vm, lib, "remove",    "aug_std_remove"    );
+	aug_register_libcall(vm, lib, "front",     "aug_std_front"     );
+	aug_register_libcall(vm, lib, "back",      "aug_std_back"      );
+	aug_register_libcall(vm, lib, "length",    "aug_std_length"    ) ;
+	aug_register_libcall(vm, lib, "contains",  "aug_std_contains"  );
+	aug_register_libcall(vm, lib, "split",     "aug_std_split"     );
 }
