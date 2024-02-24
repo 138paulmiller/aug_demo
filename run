@@ -1,17 +1,14 @@
-
-
-
 clear; 
 make clean;
 
 echo "Compiling lib..."
-cd aug_lib
+cd aug/lib
 make clean;
 make
-cd ..
+cd ../..
 
 echo "Copying..."
-yes | cp -rf aug_lib/lib/. ./build
+yes | cp -rf aug/lib/linux/. ./build
 
 echo "Compiling demo..."
 make; 

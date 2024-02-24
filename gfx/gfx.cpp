@@ -285,7 +285,6 @@ void aug_gfx_push_script(const char* script_filepath)
 		return;
 	s_gfx.scripts.push_back(script);
 	aug_call(s_gfx.vm, script, "Startup");
-	printf("Startup");
 }
 
 void aug_gfx_pop_script()

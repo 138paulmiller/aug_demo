@@ -78,7 +78,7 @@ func Update(delta){
 		GfxDrawRect(window, pos[0], pos[1], pixel_size, pixel_size, 255,255,255,255);
 	}
 
-	#GfxText(window, font, concat("Score: ", to_string(snake_len)), 0, 0, 0, 255, 0, 255);
+	GfxText(window, font, concat("Score: ", to_string(snake_len)), 0, 0, 0, 255, 0, 255);
 
 	if game_over {
 		DrawText("Game Over\nHit any Key to Restart\nHit ESC to Exit", w/2, h/2, 180, 25, 15, 255);

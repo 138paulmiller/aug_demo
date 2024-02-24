@@ -1,12 +1,12 @@
-SRC = $(wildcard aug_lib/*.cpp) $(wildcard *.cpp)
+SRC = $(wildcard gfx/*.cpp) $(wildcard *.cpp)
 
 OUT_DIR = build
 OUT = $(OUT_DIR)/aug_demo
 CC = g++
 FLAGS = -ggdb -Wall
-INC = -Iaug -Iaug_lib
+INC = -Iaug -Igfx
 LIBS = -lSDL2 -lSDL2_ttf
-LINK = -rdynamic
+LINK = -rdynamic -Wl,-rpath,.
 
 all : $(SRC)
 	$(CC) $(FLAGS) $(INC) $(SRC) $(LINK) $(LIBS) -o $(OUT)
