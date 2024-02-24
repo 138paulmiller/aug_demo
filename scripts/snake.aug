@@ -111,7 +111,7 @@ func Eat(){
 
 	# respawn food
 	foodx = snap(random(0, w), pixel_size);
-	foody = snap(random(0, h), pixel_size);
+	foody = snap(random(top_border, h), pixel_size);
 
 	# if snake encompasses entire game board, victory
 	if snake_len == (w / pixel_size) * (h / pixel_size) {
