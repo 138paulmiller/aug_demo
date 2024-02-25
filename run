@@ -1,9 +1,13 @@
 clear; 
 
+if [ "$1" == "-t" ]; then
+
 pushd .
 cd aug/test
 ./run -all
 popd
+shift;
+fi;
 
 make clean;
 

@@ -92,7 +92,7 @@ func Spawn(){
 	game_over = false;
 	snake = [];
 	snake_len = 0;
-	speed = 150;
+	speed = 100;
 	dx = 1; dy = 0;
 	px = w / 2;
 	py = h / 2;
@@ -107,7 +107,7 @@ func Eat(){
 
 	# respawn food
 	foodx = snap(random(0, w), pixel_size);
-	foody = snap(random(top_border, h), pixel_size);
+	foody = snap(random(0, h), pixel_size);
 
 	# if snake encompasses entire game board, victory
 	if snake_len == (w / pixel_size) * (h / pixel_size) {
@@ -117,13 +117,22 @@ func Eat(){
 
 	# avoid spawning in snake body. If did, move to next available food position
 	if contains(snake, [foodx, foody]){
+		var xdir = 1;
+		if random(0, 1) { 
+			xdir = -1; 
+		}
+		var ydir = 1;
+		if random(0, 1) { 
+			ydir = -1; 
+		}
+
 		var fx = foodx;
 		var fy = foody;
 		while contains(snake, [foodx, foody]) {
-			foodx += 1;
+			foodx += pixel_size * xdir;
 			if foodx >= w {
 				foodx = 0;
-				foody += 1;
+				foody += pixel_size * ydir;
 				if foody >= h {
 					foody = 0;
 				}
@@ -160,12 +169,11 @@ func Move(delta){
 		return;
 	}
 
+	append(snake, [x, y]);
 	if x == foodx and y == foody { 
 		Eat(); 
 	}
-
-	append(snake, [x, y]);
-	if length(snake) > snake_len {
+	else{
 		remove(snake, 0);
 	}
 
