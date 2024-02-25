@@ -1,4 +1,10 @@
 clear; 
+
+pushd .
+cd aug/test
+./run -all
+popd
+
 make clean;
 
 echo "Compiling lib..."

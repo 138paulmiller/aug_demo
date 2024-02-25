@@ -1,16 +1,17 @@
 use std;
+
+var game_over; 
 var window;
 var font;
+var font_size = 15;
 var pixel_size = 15;
 var top_border = pixel_size * 2;
-var font_size = 15;
 var speed;
 var w; var h;
 var px; var py;
 var dx; var dy;
 var foodx; var foody;
 var snake; var snake_len;
-var waiting_start; var game_over; var victory;
 
 func Startup(){
 	w = 540; h = 540;
@@ -18,7 +19,7 @@ func Startup(){
 	font = GfxFont("font/OpenSans.ttf", font_size);
 	snake = [];
 	snake_len = 0;
-	waiting_start = true;
+	game_over = true;
 }
 
 func Shutdown(){
@@ -29,7 +30,7 @@ func KeyUp(key){
 	if(key == "Escape") { 
 		Exit(); 
 	}
-	else if waiting_start { 
+	else if game_over { 
 		Spawn();
 	}
 }
@@ -70,7 +71,7 @@ func Update(delta){
 
 	GfxDrawRect(window, 0, 0, w, top_border, 32, 32, 32, 255);
 
-	if ! waiting_start {		
+	if ! game_over {		
 		GfxDrawRect(window, foodx, foody, pixel_size, pixel_size, 255, 0, 0,255);
 	}
 
@@ -81,9 +82,6 @@ func Update(delta){
 	GfxText(window, font, concat("Score: ", to_string(snake_len)), 0, 0, 0, 255, 0, 255);
 
 	if game_over {
-		DrawText("Game Over\nHit any Key to Restart\nHit ESC to Exit", w/2, h/2, 180, 25, 15, 255);
-	}
-	else if waiting_start {
 		DrawText("Hit any Key to Start\nHit ESC to Exit", w/2, h/2, 180, 25, 15, 255);
 	}
 
@@ -91,12 +89,10 @@ func Update(delta){
 }
 
 func Spawn(){
-	waiting_start = false;
 	game_over = false;
-	victory = false;
 	snake = [];
 	snake_len = 0;
-	speed = 100;
+	speed = 150;
 	dx = 1; dy = 0;
 	px = w / 2;
 	py = h / 2;
@@ -116,8 +112,6 @@ func Eat(){
 	# if snake encompasses entire game board, victory
 	if snake_len == (w / pixel_size) * (h / pixel_size) {
 		game_over = true;
-		waiting_start = true;
-		victory = true;
 		return;
 	}
 
@@ -139,7 +133,7 @@ func Eat(){
 }
 
 func Move(delta){
-	if waiting_start or game_over { return; }
+	if game_over { return; }
 
 	px += dx * delta * speed;
 	py += dy * delta * speed;
@@ -147,28 +141,23 @@ func Move(delta){
 	var x = snap(px, pixel_size); 
 	var y = snap(py, pixel_size);
 
-	# if has not moved since last frame
 	var head = back(snake);
-	if x == head[0] and y == head[1] { 
+
+	# if has not moved since last frame
+	if [x, y] == head { 
 		return; 
 	} 
 
 	# check if snake hit border
-	if x < 0 or x >= w or y < top_border or y >= h {
+	if x < 0 or x > w or y < top_border or y >= h + top_border {
 		game_over = true;
-		waiting_start = true;
 		return;
 	}
 
-	# check if the head hit the body
-	var i = 0;
-	while i < snake_len - 1 {
-		if snake[i] == head {
-			game_over = true;
-			waiting_start = true;
-			return;
-		}
-		i += 1;
+	# check if the head hit the body. if the head position is within remaining body 
+	if contains(snake, head, 0, snake_len - 1){
+		game_over = true;
+		return;
 	}
 
 	if x == foodx and y == foody { 
