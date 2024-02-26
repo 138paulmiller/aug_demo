@@ -1,3 +1,5 @@
 .vs
 aug_demo
 build
+*.so
+*.o

@@ -1,16 +1,30 @@
 clear; 
 
+test=false;
+build=false;
+debug=false;
+
+for var in "$@"; do
+	echo $var
+	if [ "$var" = "-t" ]; then   test=true; fi
+	if [ "$var" = "-b" ]; then   build=true; fi
+	if [ "$var" = "-dbg" ]; then debug=true; fi
+done
+
+echo $test 
+echo $build
+echo $debug
+
 # run tests if asked
-if [ "$1" == "-t" ]; then
+if ( $test ); then
 	pushd .
 		cd aug/test
 		./run -all
 	popd
 	shift;
-fi;
+fi
 
-if [ "$1" == "-b" ]; then
-
+if ( $build ); then
 	# nuke build dir
 	make clean;
 
@@ -44,12 +58,10 @@ yes | cp -rf assets/. ./build
 
 pushd .
 	cd build; 
-
-	if [ "$1" == "-dbg" ]; then
-	valgrind  --main-stacksize=1048576 --tool=memcheck \
-		./aug_demo; 
-	else 
-		./aug_demo; 
-
-	fi;
+	if ($debug);then
+		valgrind  --main-stacksize=1048576 --tool=memcheck \
+			./aug_demo; 
+		else 
+			./aug_demo; 
+	fi
 popd
