@@ -1,3 +1,4 @@
+echo off;
 clear; 
 
 test=false;
@@ -30,13 +31,13 @@ if ( $build ); then
 
 	echo "Compiling aug libs..."
 	pushd .
-		cd aug/lib
+		cd aug/test/lib
 		make clean;
 		make
 	popd 
 
 	echo "Copying..."
-	yes | cp -rf aug/lib/linux/. ./build
+	yes | cp -rf aug/test/lib/linux/. ./build
 
 	pushd .
 		echo "Compiling gfx lib..."
