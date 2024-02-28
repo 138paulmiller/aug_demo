@@ -1,20 +1,22 @@
-echo off;
+@echo off;
 clear; 
 
+install=false;
 test=false;
-build=false;
+build=true;
 debug=false;
 
 for var in "$@"; do
 	echo $var
+	if [ "$var" = "-i" ]; then   install=true; fi
 	if [ "$var" = "-t" ]; then   test=true; fi
-	if [ "$var" = "-b" ]; then   build=true; fi
+	if [ "$var" = "-r" ]; then   build=false; fi
 	if [ "$var" = "-dbg" ]; then debug=true; fi
 done
 
-echo $test 
-echo $build
-echo $debug
+if ( $install ); then
+	sudo apt install make gcc g++ valgrind libsdl2-dev libsdl2-ttf-dev
+fi;
 
 # run tests if asked
 if ( $test ); then

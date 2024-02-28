@@ -13,7 +13,7 @@ clean:
 	rm -r $(OUT_DIR)
 
 install:
-	sudo apt-get install valgrind libsdl2-dev libsdl2-ttf-dev
+	sudo apt-get install libsdl2-dev libsdl2-ttf-dev
 
 $(OUT_DIR):
 	mkdir $(OUT_DIR)
