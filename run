@@ -20,7 +20,7 @@ echo $debug
 if ( $test ); then
 	pushd .
 		cd aug/test
-		./run -all
+		./run
 	popd
 	shift;
 fi
