@@ -90,7 +90,7 @@ func Spawn(){
 func SpawnFood(){
 
 	# respawn food
-	food = [ snap(random(0, w), pixel_size), snap(random(0, h), pixel_size)];
+	food = [ snap(random(0, w), pixel_size), snap(random(top_border, h), pixel_size)];
 
 	# if snake encompasses entire game board, victory
 	if snake_len == (w / pixel_size) * (h / pixel_size) {
