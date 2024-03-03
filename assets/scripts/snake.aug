@@ -1,9 +1,12 @@
 import std;
 import gfx;
 
+var fg_color = [32, 32, 32, 255]
+var bg_color = [100, 120, 94, 255] 
+
 var game_over = true; 
-var pixel_size = 15;
-var top_border = pixel_size * 2;
+var cell_size = 15;
+var top_border = cell_size * 2;
 var w = 540; 
 var h = 540;
 var font_size = 15;
@@ -79,8 +82,8 @@ func KeyDown(key){
 	# disallow movement backwards. if next position will be at the previous body segment
 	if snake_len > 1 {
 		var next_pos = [ 
-			snap(pos[0], pixel_size) + velocity[0] * pixel_size,
-			snap(pos[1], pixel_size) + velocity[1] * pixel_size
+			snap(pos[0], cell_size) + velocity[0] * cell_size,
+			snap(pos[1], cell_size) + velocity[1] * cell_size
 		];
 
 		if next_pos == snake[snake_len-2] {
@@ -102,10 +105,10 @@ func Spawn(){
 func SpawnFood(){
 
 	# respawn food
-	food = [ snap(random(0, w), pixel_size), snap(random(top_border, h), pixel_size)];
+	food = [ snap(random(0, w), cell_size), snap(random(top_border, h), cell_size)];
 
 	# if snake encompasses entire game board, victory
-	if snake_len == (w / pixel_size) * (h / pixel_size) {
+	if snake_len == (w / cell_size) * (h / cell_size) {
 		game_over = true;
 		return;
 	}
@@ -122,10 +125,10 @@ func SpawnFood(){
 		}
 
 		while contains(snake, food) {
-			food[0] += pixel_size * xdir;
+			food[0] += cell_size * xdir;
 			if food[0] >= w {
 				food[0] = 0;
-				food[1] += pixel_size * ydir;
+				food[1] += cell_size * ydir;
 				if food[1] >= h {
 					food[1] = 0;
 				}
@@ -145,8 +148,8 @@ func Move(delta){
 	];
 	
 	var cell_pos = [ 
-		snap(pos[0], pixel_size),
-		snap(pos[1], pixel_size)
+		snap(pos[0], cell_size),
+		snap(pos[1], cell_size)
 	]; 
 
 	# if has not moved since last frame
@@ -179,31 +182,37 @@ func Move(delta){
 
 
 func Draw(){
-	GfxClear(window);
-	GfxDrawRect(window, 0, 0, w, top_border, 32, 32, 32, 255);
+	GfxClear(window, bg_color);
+	GfxDrawRect(window, 0, 0, w, top_border, fg_color);
 	if ! game_over {		
-		GfxDrawRect(window, food[0], food[1], pixel_size, pixel_size, 255, 0, 0,255);
+		var fx = food[0];	
+		var fy = food[1];
+		var fsz = cell_size / 3;
+		GfxDrawRect(window, fx+fsz,   fy,       fsz, fsz, fg_color);
+		GfxDrawRect(window, fx,       fy+fsz,   fsz, fsz, fg_color);
+		GfxDrawRect(window, fx+fsz*2, fy+fsz,   fsz, fsz, fg_color);
+		GfxDrawRect(window, fx+fsz,   fy+fsz*2, fsz, fsz, fg_color);
 	}
 	for pos in snake {
-		GfxDrawRect(window, pos[0], pos[1], pixel_size, pixel_size, 255,255,255,255);
+		GfxDrawRect(window, pos[0], pos[1], cell_size-2, cell_size-2, fg_color);
 	}
-	GfxText(window, font, concat("Score: ", to_string(snake_len)), 0, 0, 0, 255, 0, 255);
 
 	if game_over {
-		DrawTextLines("Hit Space to Start\nHit ESC to Exit", w/2, h/2, 180, 25, 15, 255);
+		DrawTextLines("Hit Space to Start\nHit ESC to Exit", w/2, h/2, fg_color);
 	}
 
-	GfxText(window, font, concat("FPS: ", to_string(fps)), w - 128, 0, 0, 255, 0, 255);
+	GfxText(window, font, concat("Score: ", to_string(snake_len)), 0, 0, bg_color);
+	GfxText(window, font, concat("FPS: ", to_string(fps)), w - 74, 0, bg_color);
 	GfxPresent(window);
 }
 
 
-func DrawTextLines(msg, ox, oy, r, g, b, a){
+func DrawTextLines(msg, ox, oy, color){
 	var lines = split(msg, "\n");
 	var dy = -1 * font_size * length(lines) / 2;
 	for line in lines {
 		var dx = -1 * (length(line) * font_size) / 4;
-		GfxText(window, font, line, ox + dx, oy + dy, r,g,b,a);
+		GfxText(window, font, line, ox + dx, oy + dy, color);
 		dy += font_size + 2;
 	}
 }

@@ -152,7 +152,15 @@ aug_value GfxClear(int argc, aug_value* args)
 
 	GfxWindow* window = (GfxWindow*)(args++)->userdata;
 
-	if (argc == 5)
+	if (argc == 2 && args->type == AUG_ARRAY && args->array->length == 4)
+	{
+		const int r = aug_to_int(aug_array_at(args->array, 0));
+		const int g = aug_to_int(aug_array_at(args->array, 1)); 
+		const int b = aug_to_int(aug_array_at(args->array, 2));
+		const int a = aug_to_int(aug_array_at(args->array, 3));
+		SDL_SetRenderDrawColor(window->renderer, r, g, b, a);
+	}
+	else if (argc == 5)
 	{
 		const int r = aug_to_int(args++);
 		const int g = aug_to_int(args++); 
@@ -184,7 +192,8 @@ aug_value GfxPresent(int argc, aug_value* args)
 
 aug_value GfxDrawRect(int argc, aug_value* args)
 {
-	if(argc != 9 || args->type != AUG_USERDATA)
+	// window, x,y,w,h, color
+	if(!(argc == 6 || argc == 9) || args->type != AUG_USERDATA)
 		return aug_none();
 
 	GfxWindow* window = (GfxWindow*)(args++)->userdata;
@@ -194,11 +203,25 @@ aug_value GfxDrawRect(int argc, aug_value* args)
 	rect.y = aug_to_int(args++);
 	rect.w = aug_to_int(args++); 
 	rect.h = aug_to_int(args++);
-	const int r = aug_to_int(args++);
-	const int g = aug_to_int(args++); 
-	const int b = aug_to_int(args++);
-	const int a = aug_to_int(args++);
-	SDL_SetRenderDrawColor(window->renderer, r, g, b, a);
+
+	if (argc == 6 && args->type == AUG_ARRAY && args->array->length == 4)
+	{
+		const int r = aug_to_int(aug_array_at(args->array, 0));
+		const int g = aug_to_int(aug_array_at(args->array, 1)); 
+		const int b = aug_to_int(aug_array_at(args->array, 2));
+		const int a = aug_to_int(aug_array_at(args->array, 3));
+		args++;
+		SDL_SetRenderDrawColor(window->renderer, r, g, b, a);
+	}
+	else 
+	{
+		const int r = aug_to_int(args++);
+		const int g = aug_to_int(args++); 
+		const int b = aug_to_int(args++);
+		const int a = aug_to_int(args++);
+		SDL_SetRenderDrawColor(window->renderer, r, g, b, a);
+	}
+
 	SDL_RenderFillRect(window->renderer, &rect);
 	return aug_none();
 }
@@ -219,7 +242,7 @@ aug_value GfxFont(int argc, aug_value* args)
 aug_value GfxText(int argc, aug_value* args)
 {
 	// window, font, text, x,y, r g b a
-	if(argc != 9)
+	if(!(argc == 6 || argc == 9))
 		return aug_none();
 
 	if(args[0].type != AUG_USERDATA && args[1].type != AUG_USERDATA && args[2].type != AUG_STRING)
@@ -232,10 +255,26 @@ aug_value GfxText(int argc, aug_value* args)
 	
 	int x = aug_to_int(args++);
 	int y = aug_to_int(args++);
-	uint8_t r = aug_to_int(args++);
-	uint8_t g = aug_to_int(args++);
-	uint8_t b = aug_to_int(args++);
-	uint8_t a = aug_to_int(args++);
+	int r;
+	int g; 
+	int b;
+	int a;
+
+	if (argc == 6 && args->type == AUG_ARRAY && args->array->length == 4)
+	{
+		r = aug_to_int(aug_array_at(args->array, 0));
+		g = aug_to_int(aug_array_at(args->array, 1)); 
+		b = aug_to_int(aug_array_at(args->array, 2));
+		a = aug_to_int(aug_array_at(args->array, 3));
+		args++;
+	}
+	else 
+	{
+		r = aug_to_int(args++);
+		g = aug_to_int(args++); 
+		b = aug_to_int(args++);
+		a = aug_to_int(args++);
+	}
 	
 	SDL_Rect rect;
 	rect.x = x;    
