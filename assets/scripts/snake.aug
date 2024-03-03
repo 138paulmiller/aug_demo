@@ -1,5 +1,5 @@
-use std;
-use gfx;
+import std;
+import gfx;
 
 var game_over = true; 
 var pixel_size = 15;
@@ -29,10 +29,22 @@ var time_prev;
 var time_delta;
 var running = true;
 
+var fps_accum = 0;
+var fps_count = 0;
+var fps = 0; # rolling avg
+
 while running {	
 	time_prev = time_curr;
 	time_curr = GfxTime();
 	time_delta = (time_curr - time_prev) / GfxRate();
+
+	fps_count += 1;
+	fps_accum += 1/time_delta;
+	if(fps_count > 100){
+		fps = fps_accum / fps_count;
+		fps_count = 0;
+		fps_accum = 0;
+	}
 
 	w = GfxWindowWidth(window);
 	h = GfxWindowHeight(window) - top_border;	
@@ -176,9 +188,12 @@ func Draw(){
 		GfxDrawRect(window, pos[0], pos[1], pixel_size, pixel_size, 255,255,255,255);
 	}
 	GfxText(window, font, concat("Score: ", to_string(snake_len)), 0, 0, 0, 255, 0, 255);
+
 	if game_over {
 		DrawTextLines("Hit Space to Start\nHit ESC to Exit", w/2, h/2, 180, 25, 15, 255);
 	}
+
+	GfxText(window, font, concat("FPS: ", to_string(fps)), w - 128, 0, 0, 255, 0, 255);
 	GfxPresent(window);
 }
 

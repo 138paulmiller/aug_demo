@@ -1,5 +1,5 @@
-use std;
-use gfx;
+import std;
+import gfx;
 
 GfxStartup();
 

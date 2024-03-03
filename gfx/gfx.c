@@ -4,6 +4,7 @@
 #define SDL_MAIN_HANDLED
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
 
 typedef struct GfxWindow
 {
@@ -211,7 +212,7 @@ aug_value GfxFont(int argc, aug_value* args)
 	const int size = aug_to_int(args++);
 	TTF_Font* font = TTF_OpenFont(font_path, size);
 	if(font == NULL)
-	    printf("TTF_OpenFont: %s\n", TTF_GetError());
+	    printf("Failed to load font: %s\n", TTF_GetError());
 	return aug_create_user_data(font);
 }
 
