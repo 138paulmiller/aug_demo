@@ -1,0 +1,3 @@
+﻿  std.c
+C:\Users\pmiller\aug_demo\aug\test\lib\std.c(303,46): warning C4244: 'function': conversion from 'double' to 'int', possible loss of data
+  aug_std.vcxproj -> C:\Users\pmiller\aug_demo\Debug\std.dll

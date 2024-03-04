@@ -11,7 +11,7 @@ void handle_error(const char* message)
 int main(int argc, char* argv[])
 {
 	aug_vm* vm = aug_startup(handle_error);
-	aug_execute(vm, "scripts/snake.aug");
+	aug_execute(vm, "C:\\Users\\pmiller\\aug_demo\\Debug\\scripts\\snake.aug");
 	aug_shutdown(vm);
 	return 0;
 }
