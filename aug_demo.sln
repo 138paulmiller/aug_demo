@@ -7,7 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "aug_demo", "projects\aug_de
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "aug_gfx", "projects\aug_gfx.vcxproj", "{DC479592-B2BA-4C42-9A21-048D022FB6EA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "aug_std", "projects\aug_std\aug_std.vcxproj", "{B9718DCB-EC40-423D-A855-E7C02647F558}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "aug_std", "projects\aug_std.vcxproj", "{B9718DCB-EC40-423D-A855-E7C02647F558}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -59,13 +59,12 @@ aug_value GfxStartup(int argc, aug_value* args)
 
 aug_value GfxShutdown(int argc, aug_value* args)
 {
-	SDL_DestroyWindow(s_window->s_window);
 	SDL_DestroyRenderer(s_window->renderer);
+	SDL_DestroyWindow(s_window->s_window);
 	
-#if __linux
-	TTF_Quit();
+//#if __linux
 	SDL_Quit(); // Causes win32 crash ? 
-#endif 
+//#endif 
 	free(s_window);
 	return aug_none();	
 }

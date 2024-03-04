@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\aug\test\lib\std.c">
+    <ClCompile Include="..\aug\test\lib\std.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
