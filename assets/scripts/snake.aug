@@ -137,9 +137,8 @@ func SpawnFood(){
 }
 
 func Move(delta){
-	if game_over { 
-		return; 
-	}
+	if game_over 
+		return
 
 	pos = [ 
 		pos[0] + velocity[0] * delta * speed, 
