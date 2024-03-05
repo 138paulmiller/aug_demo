@@ -18,12 +18,53 @@ extern "C" {
 
 typedef struct GfxWindow
 {
-	// TODO: move this to a Gfx object that scripts can manage on their own
 	SDL_Window* s_window;
 	SDL_Renderer* renderer;
 } GfxWindow;
-
 static GfxWindow* s_window;
+
+bool GfxInt3(aug_value* arg, int* x, int* y, int* z)
+{
+	if (arg != NULL && arg->type == AUG_ARRAY && arg->array->length == 3)
+	{
+		*x = aug_to_int(aug_array_at(arg->array, 0));
+		*y = aug_to_int(aug_array_at(arg->array, 1)); 
+		*z = aug_to_int(aug_array_at(arg->array, 2));
+		return true;	
+	}
+	return false;
+}
+
+bool GfxInt4(aug_value* arg, int* x, int* y, int* z, int* w)
+{
+	if (arg != NULL && arg->type == AUG_ARRAY && arg->array->length == 4)
+	{
+		*x = aug_to_int(aug_array_at(arg->array, 0));
+		*y = aug_to_int(aug_array_at(arg->array, 1)); 
+		*z = aug_to_int(aug_array_at(arg->array, 2));
+		*w = aug_to_int(aug_array_at(arg->array, 3));
+		return true;	
+	}
+	return false;
+}
+
+int GfxColor(aug_value* args, int* r, int* g, int* b, int* a)
+{
+	*r = *g = *b = 0;
+	*a = 255;
+
+	if (GfxInt3(args, r, g, b))
+		return 3;
+	if (GfxInt4(args, r, g, b, a))
+		return 4;
+
+	int i = 0;
+	if(args) *r = aug_to_int(&args[i++]);
+	if(args) *g = aug_to_int(&args[i++]);
+	if(args) *b = aug_to_int(&args[i++]);
+	if(args) *a = aug_to_int(&args[i++]);
+	return i;
+}
 
 aug_value GfxStartup(int argc, aug_value* args)
 {	
@@ -61,10 +102,7 @@ aug_value GfxShutdown(int argc, aug_value* args)
 {
 	SDL_DestroyRenderer(s_window->renderer);
 	SDL_DestroyWindow(s_window->s_window);
-	
-//#if __linux
 	SDL_Quit(); // Causes win32 crash ? 
-//#endif 
 	free(s_window);
 	return aug_none();	
 }
@@ -145,32 +183,13 @@ aug_value GfxWindowHeight(int argc, aug_value* args)
 
 aug_value GfxClear(int argc, aug_value* args)
 {
-	if (argc == 1 && args->type == AUG_ARRAY && args->array->length == 4)
-	{
-		const int r = aug_to_int(aug_array_at(args->array, 0));
-		const int g = aug_to_int(aug_array_at(args->array, 1)); 
-		const int b = aug_to_int(aug_array_at(args->array, 2));
-		const int a = aug_to_int(aug_array_at(args->array, 3));
-		SDL_SetRenderDrawColor(s_window->renderer, r, g, b, a);
-	}
-	else if (argc == 4)
-	{
-		const int r = aug_to_int(args++);
-		const int g = aug_to_int(args++); 
-		const int b = aug_to_int(args++);
-		const int a = aug_to_int(args++);
-		SDL_SetRenderDrawColor(s_window->renderer, r, g, b, a);
-	}
-	else
-	{
-		SDL_SetRenderDrawColor(s_window->renderer, 0, 0, 0, 255);
-	}
-	
+	int r,g,b,a;
+	GfxColor(args, &r, &g, &b, &a);
+	SDL_SetRenderDrawColor(s_window->renderer, r, g, b, a);
 	SDL_RenderClear(s_window->renderer);
 	SDL_SetRenderDrawColor(s_window->renderer, 0, 0, 0, 255);
 	return aug_none();
 }
-
 
 aug_value GfxPresent(int argc, aug_value* args)
 {
@@ -190,24 +209,9 @@ aug_value GfxDrawRect(int argc, aug_value* args)
 	rect.w = aug_to_int(args++); 
 	rect.h = aug_to_int(args++);
 
-	if (argc == 5 && args->type == AUG_ARRAY && args->array->length == 4)
-	{
-		const int r = aug_to_int(aug_array_at(args->array, 0));
-		const int g = aug_to_int(aug_array_at(args->array, 1)); 
-		const int b = aug_to_int(aug_array_at(args->array, 2));
-		const int a = aug_to_int(aug_array_at(args->array, 3));
-		args++;
-		SDL_SetRenderDrawColor(s_window->renderer, r, g, b, a);
-	}
-	else 
-	{
-		const int r = aug_to_int(args++);
-		const int g = aug_to_int(args++); 
-		const int b = aug_to_int(args++);
-		const int a = aug_to_int(args++);
-		SDL_SetRenderDrawColor(s_window->renderer, r, g, b, a);
-	}
-
+	int r,g,b,a;
+	GfxColor(args, &r, &g, &b, &a);
+	SDL_SetRenderDrawColor(s_window->renderer, r, g, b, a);
 	SDL_RenderFillRect(s_window->renderer, &rect);
 	return aug_none();
 }
@@ -240,23 +244,9 @@ aug_value GfxText(int argc, aug_value* args)
 	
 	int x = aug_to_int(args++);
 	int y = aug_to_int(args++);
-	int r, g, b, a;
 
-	if (argc == 5 && args->type == AUG_ARRAY && args->array->length == 4)
-	{
-		r = aug_to_int(aug_array_at(args->array, 0));
-		g = aug_to_int(aug_array_at(args->array, 1)); 
-		b = aug_to_int(aug_array_at(args->array, 2));
-		a = aug_to_int(aug_array_at(args->array, 3));
-		args++;
-	}
-	else 
-	{
-		r = aug_to_int(args++);
-		g = aug_to_int(args++); 
-		b = aug_to_int(args++);
-		a = aug_to_int(args++);
-	}
+	int r,g,b,a;
+	args+=GfxColor(args, &r, &g, &b, &a);
 	
 	SDL_Rect rect;
 	rect.x = x;    
