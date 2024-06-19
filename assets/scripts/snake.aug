@@ -13,7 +13,7 @@ var font_size = 15
 var speed = 0
 var pos = [0,0] 
 var velocity = [0,0] 
-var food =[0,0] 
+var food = [0,0] 
 var snake = [] 
 var snake_len = 0
 var input_map = {
@@ -61,6 +61,9 @@ while running {
 GfxShutdown()
 
 func HandleInput(input){
+	if(!input)
+		return true
+
 	if get(input, "window") == "close"
 		return false
 

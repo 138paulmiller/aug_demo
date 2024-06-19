@@ -91,7 +91,7 @@ aug_value GfxStartup(int argc, aug_value* args)
 		const int w = aug_to_int(args++);
 		const int h = aug_to_int(args++);
 		s_window->s_window = SDL_CreateWindow(title->buffer, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, SDL_WINDOW_SHOWN);
-		s_window->renderer = SDL_CreateRenderer(s_window->s_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+		s_window->renderer = SDL_CreateRenderer(s_window->s_window, -1, SDL_RENDERER_ACCELERATED /*| SDL_RENDERER_PRESENTVSYNC*/);
 		return aug_create_bool(true);
 	}
 
