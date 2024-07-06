@@ -64,10 +64,10 @@ func HandleInput(input){
 	if(!input)
 		return true
 
-	if get(input, "window") == "close"
+	if input["window"] == "close"
 		return false
 
-	var key_down = get(input, "key_down")
+	var key_down = input["key_down"]
 	if key_down{
 		if key_down == "Escape"
 			return false
